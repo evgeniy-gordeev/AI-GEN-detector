@@ -26,10 +26,7 @@ It utilizes HuggingFace transformer model to solve the task.
 
 
 # max_length, num_return_sequences, early_stopping - добавляем на них крутилки
-full_text = """ 
-    Что насчет на русском?
-            """
-
+full_text =  st.text_area('Введите текст','', placeholder = "Может быть запрос на русском или английском языке..")
 st.write('**Исходный текст:**')
 st.write(full_text)
 
