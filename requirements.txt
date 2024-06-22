@@ -1,6 +1,6 @@
 datasets==2.19.1
 nltk==3.8.1
-parrot
+git+https://github.com/PrithivirajDamodaran/Parrot.git 
 sentencepiece==0.2.0
 streamlit==1.23.1
 torch==2.0.1

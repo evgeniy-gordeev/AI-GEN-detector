@@ -19,7 +19,7 @@ from string import punctuation
 
 # модели
 import torch
-#from parrot import Parrot
+from parrot import Parrot
 from transformers import BartForConditionalGeneration, BartTokenizer
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
@@ -95,6 +95,51 @@ def create_paraphrase_bart(full_text, max_length, num_return_sequences, early_st
 
     return output_text_bart
 
+def create_paraphrase(full_text):
+    # Использование модели T5 для перефразирования
+    model = T5ForConditionalGeneration.from_pretrained("t5-base")
+    tokenizer = T5Tokenizer.from_pretrained("t5-base")
+
+    input_text = full_text
+    input_ids = tokenizer.encode(input_text, return_tensors='pt')
+
+    output_ids = model.generate(input_ids, max_length=100, num_return_sequences=1, early_stopping=True)
+    t5_output_text = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+    # Использование библиотеки Parrot для дополнительного перефразирования
+    parrot = Parrot(model_tag="prithivida/parrot_paraphraser_on_T5", use_gpu=True)
+
+    phrases = [x.strip() for x in full_text.split('.')]
+    output_phrases = []
+
+    for phrase in phrases:
+        if len(phrase) > 1:
+            para_phrases = parrot.augment(input_phrase=phrase,
+                                          use_gpu=False,
+                                          diversity_ranker="levenshtein",
+                                          do_diverse=False,
+                                          max_return_phrases=10,
+                                          max_length=32,
+                                          adequacy_threshold=0.99,
+                                          fluency_threshold=0.90)
+
+            try:
+                for para_phrase in para_phrases:
+                    (x, y) = para_phrase
+                    x = x[0].upper() + x[1:] # capitalize
+                    output_phrases.append(x)
+                    break # just get the first phrase
+            except:
+                print("Exception occurred with this one.")
+
+    parrot_output_text = ".".join(output_phrases)
+
+    # Оценка качества перефразирования
+    bleu_score = sentence_bleu([full_text.split()], parrot_output_text.split())
+    print(f"BLEU Score: {bleu_score:.2f}")
+
+    return t5_output_text, parrot_output_text
+
 
 def is_generated_by_ai(text):
     if text == '':
@@ -109,3 +154,41 @@ def is_generated_by_ai(text):
             result['label'] =  "Human-generated"
             result['score'] = result['score']
         return result
+    
+# Функция для перефразирования текста
+def paraphrase(text):
+
+    # Загрузка моделей машинного перевода
+    src_model = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-en-ru")
+    src_tokenizer = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-en-ru")
+
+    tgt_model = MarianMTModel.from_pretrained("Helsinki-NLP/opus-mt-ru-en")
+    tgt_tokenizer = MarianTokenizer.from_pretrained("Helsinki-NLP/opus-mt-ru-en")
+
+    # Перевод текста с английского на русский
+    input_ids = src_tokenizer.encode(text, return_tensors="pt")
+    output_ids = src_model.generate(input_ids, max_length=100, num_beams=4, early_stopping=True)
+    paraphrased_text_ru = src_tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+    # Перевод обратно с русского на английский
+    input_ids = tgt_tokenizer.encode(paraphrased_text_ru, return_tensors="pt")
+    output_ids = tgt_model.generate(input_ids, max_length=100, num_beams=4, early_stopping=True)
+    paraphrased_text = tgt_tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+    return paraphrased_text
+
+def russian_paraphrase(text):
+    MODEL_NAME = 'cointegrated/rut5-base-paraphraser'
+    model = T5ForConditionalGeneration.from_pretrained(MODEL_NAME)
+    tokenizer = T5Tokenizer.from_pretrained(MODEL_NAME)
+
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model.to(device)
+    model.eval()
+
+    x = tokenizer(text, return_tensors='pt', padding=True).to(device)
+    max_size = int(x.input_ids.shape[1] * 1.5 + 10)
+    out = model.generate(**x, encoder_no_repeat_ngram_size=4, num_beams=5, max_length=max_size, do_sample=False)
+    
+    paraphrased_text = tokenizer.decode(out[0], skip_special_tokens=True)
+    return paraphrased_text
