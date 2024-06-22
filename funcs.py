@@ -18,6 +18,7 @@ from string import punctuation
 
 
 # модели
+import numpy as np
 import torch
 from parrot import Parrot
 from transformers import BartForConditionalGeneration, BartTokenizer
