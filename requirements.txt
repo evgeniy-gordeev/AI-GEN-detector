@@ -1,6 +1,6 @@
 datasets==2.19.1
 nltk==3.8.1
-parrot==1.0
+parrot
 sentencepiece==0.2.0
 streamlit==1.23.1
 torch==2.0.1
