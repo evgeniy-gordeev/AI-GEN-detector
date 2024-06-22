@@ -18,7 +18,7 @@ from string import punctuation
 
 # модели
 import torch
-from parrot import Parrot
+#from parrot import Parrot
 from transformers import BartForConditionalGeneration, BartTokenizer
 from transformers import T5ForConditionalGeneration, T5Tokenizer
 from transformers import GPT2LMHeadModel, GPT2Tokenizer
