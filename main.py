@@ -48,7 +48,7 @@ def set_seed(seed):
 set_seed(42)
 
 
-def create_paraphrase_T5(full_text, max_length, num_return_sequences, early_stopping, type_model):
+def create_paraphrase_T5(full_text, max_length, num_return_sequences, early_stopping):
 
     model_1 = "t5-base"
     model_2 = "t5-large"
@@ -72,7 +72,7 @@ def create_paraphrase_T5(full_text, max_length, num_return_sequences, early_stop
 
     return t5_output_text
 
-def create_paraphrase_bart(full_text, max_length, num_return_sequences, early_stopping, type_model):
+def create_paraphrase_bart(full_text, max_length, num_return_sequences, early_stopping):
 
     model_1 = "facebook/bart-base"
     model_2 = "facebook/bart-large"
@@ -138,9 +138,9 @@ full_text = """
             APJ Abdul Kalam, former president of India. This story sheds light on the journey of a young boy from Rameswaram to become a renowned scientist.
             It reflects how simple living, dedication, strong will and hard work led to success. It also shows how cultural unity impacts the lives of individuals.
             """
-#  T5_paraphrased = create_paraphrase_T5(full_text, max_length=80, num_return_sequences=1, early_stopping=True)
-# print("\nT5 paraphrased text: \n")
-# st.write(f'**{T5_paraphrased}**')
+T5_paraphrased = create_paraphrase_T5(full_text, max_length=80, num_return_sequences=1, early_stopping=True)
+print("\nT5 paraphrased text: \n")
+st.write(f'**{T5_paraphrased}**')
 
 bart_paraphrased = create_paraphrase_bart(full_text, max_length=100, num_return_sequences=1, early_stopping=True)
 print("\nBart paraphrased text: \n")
