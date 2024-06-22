@@ -72,6 +72,31 @@ def create_paraphrase_T5(full_text, max_length, num_return_sequences, early_stop
 
     return t5_output_text
 
+def create_paraphrase_bart(full_text, max_length, num_return_sequences, early_stopping, type_model):
+
+    model_1 = "facebook/bart-base"
+    model_2 = "facebook/bart-large"
+
+    model = BartForConditionalGeneration.from_pretrained(model_2)
+    tokenizer = BartTokenizer.from_pretrained(model_2)
+
+    input_text = full_text
+    input_ids = tokenizer.encode(input_text, return_tensors='pt')
+
+    output_ids = model.generate(input_ids,
+                                max_length=max_length,
+                                num_return_sequences=num_return_sequences,
+                                early_stopping=early_stopping)
+    output_text_bart = tokenizer.decode(output_ids[0], skip_special_tokens=True)
+
+    # Оценка качества перефразирования
+    bleu_score = sentence_bleu([full_text.split()], output_text_bart.split())
+    print(f"BLEU Score: {bleu_score:.2f}")
+
+    print(f"Перефразированный текст: {output_text_bart}")
+
+    return output_text_bart
+
 
 def is_generated_by_ai(text):
     if text == '':
@@ -113,12 +138,13 @@ full_text = """
             APJ Abdul Kalam, former president of India. This story sheds light on the journey of a young boy from Rameswaram to become a renowned scientist.
             It reflects how simple living, dedication, strong will and hard work led to success. It also shows how cultural unity impacts the lives of individuals.
             """
-T5_paraphrased = create_paraphrase_T5(full_text, max_length=80, num_return_sequences=1, early_stopping=True)
+#  T5_paraphrased = create_paraphrase_T5(full_text, max_length=80, num_return_sequences=1, early_stopping=True)
+# print("\nT5 paraphrased text: \n")
+# st.write(f'**{T5_paraphrased}**')
 
-print("Original text: \n")
-print(full_text)
-print("\nT5 paraphrased text: \n")
-st.write(f'**{T5_paraphrased}**')
+bart_paraphrased = create_paraphrase_bart(full_text, max_length=100, num_return_sequences=1, early_stopping=True)
+print("\nBart paraphrased text: \n")
+print(bart_paraphrased)
 
 
 
