@@ -26,9 +26,7 @@ It utilizes HuggingFace transformer model to solve the task.
 
 
 # max_length, num_return_sequences, early_stopping - добавляем на них крутилки
-full_text =  st.text_area('Введите текст','', placeholder = "Может быть запрос на русском или английском языке..")
-st.write('**Исходный текст:**')
-st.write(full_text)
+full_text =  st.text_area('**Исходный текст**','', placeholder = "Может быть запрос на русском или английском языке..")
 
 
 option = st.selectbox(
@@ -70,5 +68,5 @@ if option!=None:
 
     st.write('**Хуманизация**')
     st.write("насколько human-like/ai-like получился текст. Чем ближе к 1, тем больше Human-like")
-    output = is_generated_by_ai(paraphrased)
-    st.write(f'**{output}**')
+    # output = is_generated_by_ai(paraphrased) - dobavim pozhe
+    # st.write(f'**{output}**')
