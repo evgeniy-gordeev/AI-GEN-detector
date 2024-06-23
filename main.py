@@ -72,21 +72,24 @@ if option!=None:
 
     st.write('**Маскировка**')
     with st.spinner("Please wait..."):
-        masked = modify_syntax(paraphrased)
-        masked = modify_sentence_length(masked)
-        masked = modify_word_order(masked)
+        # masked = modify_syntax(paraphrased)
+        # masked = modify_sentence_length(masked)
+        # masked = modify_word_order(masked)
 
-        masked = activate_passive_sentences(masked)
+        masked = activate_passive_sentences(paraphrased)
         masked = add_emotional_elements(masked)
         masked = change_style_to_conversational(masked)
 
         # masked = scramble_words_with_control(paraphrased)
         # masked = find_synonyms(paraphrased)
         # masked = replace_synonyms(paraphrased)
+        st.write(masked)
 
 
 
     st.write('**Степень хуманизации**')
     st.write("насколько human-like/ai-like получился текст. Чем ближе к 1, тем больше Human-like")
     output = is_generated_by_ai(masked)
-    st.write(f'**{output}**')
+    label = output['label']
+    score = int(output['score'])
+    st.write(f'Вывод - **{label}**: {score}%')

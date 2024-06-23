@@ -29,11 +29,6 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 
 # метрики
 from nltk.translate.bleu_score import sentence_bleu
-from datasets import load_metric
-import nltk
-#from nltk.translate.ter_score import ter_score
-import sentencepiece
-
 import torch
 from transformers import pipeline
 
@@ -150,10 +145,10 @@ def is_generated_by_ai(text):
         result = text_classifier(text)[0]
         if result['label'] == "LABEL_1":
             result['label'] = "Human-generated"
-            result['score'] = 1 - result['score']
+            result['score'] = (1 - result['score'])*100
         else:
             result['label'] =  "Human-generated"
-            result['score'] = result['score']
+            result['score'] = result['score']*100
         return result
     
 # Функция для перефразирования текста
