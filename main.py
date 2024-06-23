@@ -28,7 +28,6 @@ It utilizes HuggingFace transformer model to solve the task.
 # max_length, num_return_sequences, early_stopping - добавляем на них крутилки
 full_text =  st.text_area('**Исходный текст**','', placeholder = "Может быть запрос на русском или английском языке..")
 
-
 option = st.selectbox(
     "**Какую модель Вы хотите использовать?**",
     ("T5", "BART", "PARROT", "ENGLISH LANGUAGE", "RUSSIAN LANGUAGE"),
@@ -65,8 +64,29 @@ if option!=None:
 
     else:
         print(None)
+    
+    from masks import modify_syntax, modify_sentence_length, modify_word_order
+    from masks import activate_passive_sentences, add_emotional_elements, change_style_to_conversational
+    from masks import scramble_words_with_control, find_synonyms, replace_synonyms
 
-    st.write('**Хуманизация**')
+
+    st.write('**Маскировка**')
+    with st.spinner("Please wait..."):
+        masked = modify_syntax(paraphrased)
+        masked = modify_sentence_length(masked)
+        masked = modify_word_order(masked)
+
+        masked = activate_passive_sentences(masked)
+        masked = add_emotional_elements(masked)
+        masked = change_style_to_conversational(masked)
+
+        # masked = scramble_words_with_control(paraphrased)
+        # masked = find_synonyms(paraphrased)
+        # masked = replace_synonyms(paraphrased)
+
+
+
+    st.write('**Степень хуманизации**')
     st.write("насколько human-like/ai-like получился текст. Чем ближе к 1, тем больше Human-like")
-    # output = is_generated_by_ai(paraphrased) - dobavim pozhe
-    # st.write(f'**{output}**')
+    output = is_generated_by_ai(masked)
+    st.write(f'**{output}**')
